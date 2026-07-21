@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerer l'evenement — EventSport</title>
+<style>
+  :root{
+    --ink: #16241f;
+    --paper: #f4f1ea;
+    --line: #d8d2c4;
+    --accent: #ff5a36;
+    --accent-dark: #c93f20;
+    --green: #2f6b4f;
+    --green-light: #e6efe8;
+    --muted: #6f7a72;
+    --red: #a33;
+    --red-light: #f6e8e8;
+    --blue: #2c6b8f;
+    --blue-light: #e6f0f5;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    line-height:1.5;
+  }
+  header{
+    border-bottom: 3px solid var(--ink);
+    padding: 18px 32px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background: var(--paper);
+    position: sticky;
+    top:0;
+    z-index:50;
+  }
+  .logo{
+    font-family: Georgia, 'Times New Roman', serif;
+    font-weight:bold;
+    font-size: 26px;
+    letter-spacing: -0.5px;
+    text-decoration:none;
+    color: var(--ink);
+  }
+  .logo span{ color: var(--accent); }
+  nav a{
+    text-decoration:none; color:var(--ink); font-size:14px; font-weight:600;
+    border:2px solid var(--ink); padding:8px 20px; border-radius:2px;
+  }
+  nav a:hover{ border-color: var(--accent); color: var(--accent); }
+
+  .page{ max-width: 880px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  .eyebrow{
+    font-size:12px; letter-spacing:3px; text-transform:uppercase;
+    color: var(--accent-dark); font-weight:bold; margin-bottom:8px;
+    display:flex; align-items:center; gap:10px;
+    flex-wrap:wrap;
+  }
+  .sport-tag{
+    font-size:11px; font-weight:bold; letter-spacing:1.5px;
+    text-transform:uppercase; padding:4px 10px; border-radius:3px;
+    background: var(--green-light); color: var(--green);
+  }
+  h1{
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 42px;
+    letter-spacing:-1px;
+    margin-bottom: 6px;
+  }
+  .meta-line{ color: var(--muted); font-size:15px; margin-bottom: 28px; }
+  .meta-line b{ color: var(--ink); }
+
+  .role-banner{
+    padding: 14px 18px; border-radius:4px; font-size:13px;
+    margin-bottom: 28px; display:flex; justify-content:space-between;
+    align-items:center; gap:12px; flex-wrap:wrap;
+  }
+  .role-admin{
+    background: var(--ink); color: var(--paper);
+  }
+  .role-admin b{ color: var(--accent); }
+  .role-member{
+    background: var(--blue-light); color: var(--blue);
+  }
+  .role-visitor{
+    background: var(--green-light); color: var(--green);
+  }
+
+  .grid-2{ display:grid; grid-template-columns: 1.4fr 1fr; gap:24px; }
+  @media (max-width: 760px){ .grid-2{ grid-template-columns:1fr; } }
+
+  .card{
+    border: 1px solid var(--ink); background:#fff;
+    border-radius:4px; overflow:hidden; margin-bottom:24px;
+  }
+  .card-head{
+    padding: 14px 20px; border-bottom: 1px solid var(--line);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .card-head h3{ font-family: Georgia, serif; font-size:18px; }
+  .card-body{ padding: 20px; display:flex; flex-direction:column; gap:14px; }
+
+  .field label{ display:block; font-size:13px; font-weight:bold; margin-bottom:6px; }
+  .field input, .field select, .field textarea{
+    width:100%; padding:10px 12px; border:1px solid var(--ink);
+    background:#fff; font-size:14px; font-family:inherit; border-radius:2px;
+  }
+  .field input:disabled, .field select:disabled, .field textarea:disabled{
+    background: var(--paper); color: var(--muted); border-color: var(--line); cursor:not-allowed;
+  }
+  .field textarea{ resize:vertical; min-height:80px; }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+  .btn{
+    background: var(--ink); color: var(--paper); border:none;
+    padding: 10px 22px; font-weight:bold; font-size:14px;
+    cursor:pointer; border-radius: 2px; transition: background .15s;
+    text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .btn:hover{ background: var(--accent); }
+  .btn:disabled{ opacity:.5; cursor:not-allowed; }
+  .btn-outline{
+    background:transparent; border:2px solid var(--ink); color:var(--ink);
+    padding:8px 20px; font-weight:bold; cursor:pointer; font-size:14px;
+    border-radius:2px; text-decoration:none; display:inline-flex; align-items:center; justify-content:center;
+  }
+  .btn-outline:hover{ border-color:var(--accent); color:var(--accent); }
+  .btn-danger{
+    background:transparent; border:2px solid var(--red); color:var(--red);
+    padding:8px 20px; font-weight:bold; cursor:pointer; font-size:14px;
+    border-radius:2px;
+  }
+  .btn-danger:hover{ background: var(--red-light); }
+  .btn-row{ display:flex; gap:10px; flex-wrap:wrap; }
+
+  .progress-bar{ height:8px; background: var(--line); border-radius:4px; overflow:hidden; }
+  .progress-fill{ height:100%; background: var(--accent); }
+  .progress-label{ font-size:13px; color:var(--muted); margin-top:6px; display:flex; justify-content:space-between; }
+
+  .participants-list{ display:flex; flex-direction:column; gap:8px; max-height:300px; overflow-y:auto; }
+  .participant-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 14px; background:var(--paper); border:1px solid var(--line); border-radius:3px;
+    font-size:14px;
+  }
+  .participant-row .pname{ display:flex; align-items:center; gap:10px; }
+  .pnum{
+    width:22px; height:22px; border-radius:50%; background:var(--ink); color:var(--paper);
+    font-size:11px; display:flex; align-items:center; justify-content:center; font-weight:bold;
+    flex-shrink:0;
+  }
+  .remove-btn{
+    background:none; border:none; color:var(--red); cursor:pointer; font-size:13px; font-weight:bold;
+    padding:4px 8px;
+  }
+  .remove-btn:hover{ background: var(--red-light); border-radius:3px; }
+
+  .empty-msg{ font-size:13px; color:var(--muted); padding:8px 0; }
+
+  .add-participant{ display:flex; gap:10px; }
+  .add-participant input{ flex:1; }
+
+  .share-box{
+    display:flex; gap:10px; align-items:center;
+    background: var(--paper); border:1px solid var(--line); border-radius:3px; padding:8px 12px;
+  }
+  .share-box input{
+    flex:1; border:none; background:transparent; font-size:13px; font-family: 'Courier New', monospace;
+    outline:none;
+  }
+  .copy-btn{
+    background: var(--ink); color:var(--paper); border:none; padding:6px 14px;
+    font-size:12px; font-weight:bold; border-radius:2px; cursor:pointer;
+  }
+  .copy-btn:hover{ background: var(--accent); }
+
+  .status-pill{
+    display:inline-block; font-size:12px; font-weight:bold; padding:4px 12px;
+    border-radius:12px;
+  }
+  .status-open{ background:var(--green-light); color:var(--green); }
+  .status-full{ background:var(--red-light); color:var(--red); }
+
+  .not-found{
+    text-align:center; padding: 80px 20px;
+  }
+  .not-found h1{ font-size:36px; }
+  .not-found p{ color:var(--muted); margin: 12px 0 24px; }
+
+  @media (max-width: 640px){
+    .field-row{ grid-template-columns:1fr; }
+    h1{ font-size:30px; }
+    .add-participant{ flex-direction:column; }
+    .role-banner{ flex-direction:column; text-align:center; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">Event<span>Sport</span></a>
+  <nav>
+    <a href="index.html">← Tous les evenements</a>
+  </nav>
+</header>
+
+<div class="page" id="page-content">
+  <!-- filled by JS -->
+</div>
+
+<script type="module">
+import { db } from './firebase-config.js';
+import { doc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+
+const params = new URLSearchParams(window.location.search);
+const eventId = params.get('id');
+const page = document.getElementById('page-content');
+let currentEvent = null;
+let isAdmin = false;
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+function fmtDate(d, t) {
+  if(!d) return 'Date non precisee';
+  const date = new Date(d + 'T' + (t || '00:00'));
+  const options = { weekday:'long', day:'numeric', month:'long', year:'numeric' };
+  let str = date.toLocaleDateString('fr-FR', options);
+  if(t) str += ' a ' + t;
+  return str;
+}
+
+function isUserAdmin(eventId) {
+  const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+  return adminEvents.includes(eventId);
+}
+
+async function loadEvent() {
+  if (!eventId) {
+    renderNotFound();
+    return;
+  }
+
+  const eventRef = doc(db, "events", eventId);
+  onSnapshot(eventRef, (docSnap) => {
+    if (docSnap.exists()) {
+      currentEvent = {
+        id: docSnap.id,
+        ...docSnap.data()
+      };
+      
+      isAdmin = isUserAdmin(eventId);
+      render();
+    } else {
+      renderNotFound();
+    }
+  });
+}
+
+function renderNotFound() {
+  page.innerHTML = `
+    <div class="not-found">
+      <h1>Evenement introuvable</h1>
+      <p>Cet evenement n'existe pas ou a ete supprime.</p>
+      <a class="btn" href="index.html">Voir tous les evenements</a>
+    </div>
+  `;
+}
+
+function render() {
+  const e = currentEvent;
+  if (!e) return;
+
+  const participants = e.participants || [];
+  const pct = Math.min(100, Math.round((participants.length / e.max) * 100));
+  const full = participants.length >= e.max;
+  const shareUrl = window.location.origin + window.location.pathname.replace('event.html','index.html');
+
+  let roleText = '';
+  let roleClass = '';
+  
+  if (isAdmin) {
+    roleText = 'Admin - Tu as tous les droits de gestion';
+    roleClass = 'role-admin';
+  } else if (participants.includes(localStorage.getItem('memberName') || '')) {
+    roleText = 'Membre - Tu es inscrit a cet evenement';
+    roleClass = 'role-member';
+  } else {
+    roleText = 'Visiteur - Inscris-toi pour rejoindre l\'evenement';
+    roleClass = 'role-visitor';
+  }
+
+  page.innerHTML = `
+    <div class="role-banner ${roleClass}">
+      <span>${roleText}</span>
+      ${isAdmin ? `<span style="font-size:11px; opacity:0.7;">Tu es admin de cet evenement</span>` : ''}
+    </div>
+
+    <div class="eyebrow">
+      <span class="sport-tag">${escapeHtml(e.sport)}</span>
+      <span class="status-pill ${full ? 'status-full' : 'status-open'}">${full ? 'Complet' : 'Inscriptions ouvertes'}</span>
+    </div>
+    <h1>${escapeHtml(e.name)}</h1>
+    <div class="meta-line">
+      <b>${escapeHtml(e.format)}</b> · ${fmtDate(e.date, e.time)} · ${escapeHtml(e.location || 'Lieu non precise')}
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-head">
+            <h3>Participants (${participants.length}/${e.max})</h3>
+            ${isAdmin ? `<span style="font-size:12px; color:var(--accent);">Gestion active</span>` : ''}
+          </div>
+          <div class="card-body">
+            <div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+              <div class="progress-label">
+                <span>${participants.length} / ${e.max} inscrits</span>
+                <span>${full ? 'Complet' : pct + '% des places prises'}</span>
+              </div>
+            </div>
+            <div class="participants-list" id="participants-list"></div>
+            
+            ${!full ? `
+              <div class="add-participant">
+                <input type="text" id="new-participant" placeholder="${isAdmin ? 'Ajouter un participant' : 'Ton nom'}" ${isAdmin ? '' : 'autofocus'}>
+                <button class="btn" id="add-participant-btn">${isAdmin ? 'Ajouter' : 'Rejoindre'}</button>
+              </div>
+            ` : `<div class="empty-msg">Plus de places disponibles.</div>`}
+          </div>
+        </div>
+
+        ${e.desc ? `
+          <div class="card">
+            <div class="card-head"><h3>Description</h3></div>
+            <div class="card-body">
+              <p style="font-size:14px; color:var(--muted);">${escapeHtml(e.desc)}</p>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-head"><h3>Partager</h3></div>
+          <div class="card-body">
+            <div class="field">
+              <label>Lien public</label>
+              <div class="share-box">
+                <input type="text" readonly value="${shareUrl}" id="share-input">
+                <button class="copy-btn" data-copy="share-input">Copier</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        ${isAdmin ? renderAdminInfo(e) : renderMemberInfo(e)}
+        
+        ${isAdmin ? `
+          <div class="card">
+            <div class="card-head"><h3>Zone dangereuse</h3></div>
+            <div class="card-body">
+              <p style="font-size:13px; color:var(--muted);">Supprimer cet evenement le retirera definitivement de la liste, pour tout le monde.</p>
+              <button class="btn-danger" id="delete-event">Supprimer l'evenement</button>
+            </div>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+
+  renderParticipants(e);
+  attachHandlers(e);
+}
+
+function renderAdminInfo(e) {
+  return `
+    <div class="card">
+      <div class="card-head">
+        <h3>Gestion avancee</h3>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label>Nom de l'evenement</label>
+          <input type="text" id="f-name" value="${escapeHtml(e.name)}">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Sport</label>
+            <select id="f-sport">
+              ${['Ping-pong','Football','Basketball','Tennis','Padel','Volleyball','Autre'].map(s =>
+                `<option ${s===e.sport?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+          <div class="field">
+            <label>Format</label>
+            <select id="f-format">
+              ${['Tournoi elimination directe','Match simple','Championnat (poules)','Tournoi par equipes'].map(s =>
+                `<option ${s===e.format?'selected':''}>${s}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="f-date" value="${e.date || ''}">
+          </div>
+          <div class="field">
+            <label>Heure</label>
+            <input type="time" id="f-time" value="${e.time || ''}">
+          </div>
+        </div>
+        <div class="field">
+          <label>Lieu</label>
+          <input type="text" id="f-location" value="${escapeHtml(e.location || '')}">
+        </div>
+        <div class="field">
+          <label>Places maximum</label>
+          <input type="number" id="f-max" min="${e.participants.length}" value="${e.max}">
+        </div>
+        <div class="field">
+          <label>Description</label>
+          <textarea id="f-desc">${escapeHtml(e.desc || '')}</textarea>
+        </div>
+        <button class="btn" id="save-info">Enregistrer les modifications</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderMemberInfo(e) {
+  return `
+    <div class="card">
+      <div class="card-head">
+        <h3>Informations</h3>
+      </div>
+      <div class="card-body">
+        <div class="field">
+          <label>Nom</label>
+          <input type="text" value="${escapeHtml(e.name)}" disabled>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Sport</label>
+            <input type="text" value="${escapeHtml(e.sport)}" disabled>
+          </div>
+          <div class="field">
+            <label>Format</label>
+            <input type="text" value="${escapeHtml(e.format)}" disabled>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Date</label>
+            <input type="text" value="${fmtDate(e.date, e.time)}" disabled>
+          </div>
+          <div class="field">
+            <label>Heure</label>
+            <input type="text" value="${e.time || 'Non precisee'}" disabled>
+          </div>
+        </div>
+        <div class="field">
+          <label>Lieu</label>
+          <input type="text" value="${escapeHtml(e.location || 'Non precise')}" disabled>
+        </div>
+        <div class="field">
+          <label>Places</label>
+          <input type="text" value="${e.participants.length} / ${e.max}" disabled>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderParticipants(e) {
+  const list = document.getElementById('participants-list');
+  list.innerHTML = '';
+  const participants = e.participants || [];
+  
+  if(participants.length === 0){
+    list.innerHTML = '<div class="empty-msg">Aucun participant pour l\'instant.</div>';
+    return;
+  }
+  
+  participants.forEach((p, idx) => {
+    const row = document.createElement('div');
+    row.className = 'participant-row';
+    const isCurrentUser = p === localStorage.getItem('memberName');
+    row.innerHTML = `
+      <span class="pname">
+        <span class="pnum">${idx+1}</span>
+        ${escapeHtml(p)}
+        ${isCurrentUser ? ' <span style="font-size:11px; color:var(--green);">(toi)</span>' : ''}
+      </span>
+      ${isAdmin ? `<button class="remove-btn" data-remove="${idx}">Retirer</button>` : ''}
+    `;
+    list.appendChild(row);
+  });
+  
+  if(isAdmin){
+    list.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const idx = parseInt(btn.dataset.remove);
+        const newParticipants = [...participants];
+        const removed = newParticipants.splice(idx, 1);
+        if(confirm(`Retirer "${removed[0]}" de l'evenement ?`)) {
+          try {
+            const eventRef = doc(db, "events", eventId);
+            await updateDoc(eventRef, {
+              participants: newParticipants
+            });
+          } catch (error) {
+            console.error("Erreur:", error);
+            alert("Erreur lors du retrait.");
+          }
+        }
+      });
+    });
+  }
+}
+
+function attachHandlers(e) {
+  // Copy buttons
+  document.querySelectorAll('[data-copy]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const input = document.getElementById(btn.dataset.copy);
+      input.select();
+      navigator.clipboard.writeText(input.value).then(() => {
+        const old = btn.textContent;
+        btn.textContent = 'Copie !';
+        setTimeout(() => btn.textContent = old, 1500);
+      }).catch(() => {
+        document.execCommand('copy');
+      });
+    });
+  });
+
+  // Add participant
+  const addBtn = document.getElementById('add-participant-btn');
+  if(addBtn){
+    addBtn.addEventListener('click', async () => {
+      const input = document.getElementById('new-participant');
+      const name = input.value.trim();
+      if(!name){ alert('Entre un nom.'); return; }
+      
+      const participants = e.participants || [];
+      if(participants.length >= e.max){ alert('Plus de places disponibles.'); return; }
+      
+      if(!isAdmin && participants.includes(name)){
+        alert('Ce nom est deja pris !');
+        return;
+      }
+      
+      try {
+        const eventRef = doc(db, "events", eventId);
+        await updateDoc(eventRef, {
+          participants: [...participants, name]
+        });
+        
+        if(!isAdmin){
+          localStorage.setItem('memberName', name);
+        }
+        
+        input.value = '';
+      } catch (error) {
+        console.error("Erreur:", error);
+        alert("Erreur lors de l'inscription.");
+      }
+    });
+    
+    document.getElementById('new-participant').addEventListener('keydown', (ev) => {
+      if(ev.key === 'Enter') addBtn.click();
+    });
+  }
+
+  // Admin: Save info
+  if(isAdmin){
+    const saveBtn = document.getElementById('save-info');
+    if(saveBtn){
+      saveBtn.addEventListener('click', async () => {
+        const name = document.getElementById('f-name').value.trim();
+        if(!name){ alert("Le nom de l'evenement est obligatoire."); return; }
+        const max = parseInt(document.getElementById('f-max').value) || 1;
+        const participants = e.participants || [];
+
+        if(max < participants.length){
+          alert(`Impossible : il y a deja ${participants.length} participants inscrits.`);
+          return;
+        }
+
+        try {
+          const eventRef = doc(db, "events", eventId);
+          await updateDoc(eventRef, {
+            name: name,
+            sport: document.getElementById('f-sport').value,
+            format: document.getElementById('f-format').value,
+            date: document.getElementById('f-date').value,
+            time: document.getElementById('f-time').value,
+            location: document.getElementById('f-location').value.trim(),
+            max: max,
+            desc: document.getElementById('f-desc').value.trim()
+          });
+          alert('Evenement mis a jour !');
+        } catch (error) {
+          console.error("Erreur:", error);
+          alert("Erreur lors de la mise a jour.");
+        }
+      });
+    }
+
+    // Delete event
+    const deleteBtn = document.getElementById('delete-event');
+    if(deleteBtn){
+      deleteBtn.addEventListener('click', async () => {
+        if(!confirm("Supprimer definitivement cet evenement ? Cette action est irreversible.")) return;
+        try {
+          await deleteDoc(doc(db, "events", eventId));
+          // Retirer l'evenement de la liste des admins
+          const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
+          const updatedAdminEvents = adminEvents.filter(id => id !== eventId);
+          localStorage.setItem('adminEvents', JSON.stringify(updatedAdminEvents));
+          window.location.href = 'index.html';
+        } catch (error) {
+          console.error("Erreur:", error);
+          alert("Erreur lors de la suppression.");
+        }
+      });
+    }
+  }
+}
+
+loadEvent();
+</script>
+
+</body>
+</html>
