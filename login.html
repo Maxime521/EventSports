@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion — EventSport</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">Event<span>Sport</span></a>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="event.html">Événements</a>
+    <a href="register.html" class="btn-outline" style="text-decoration:none; display:inline-block;">S'inscrire</a>
+  </nav>
+</header>
+
+<main class="page auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="eyebrow">Bienvenue</div>
+        <h1>Connexion</h1>
+        <p class="subtitle">Connecte-toi pour créer et gérer tes événements sportifs.</p>
+      </div>
+
+      <form id="login-form">
+        <div id="auth-error" class="auth-error" style="display:none;"></div>
+
+        <div class="field">
+          <label for="login-email">Email</label>
+          <input type="email" id="login-email" placeholder="ton@email.com" required autocomplete="email">
+        </div>
+
+        <div class="field">
+          <label for="login-password">Mot de passe</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn" id="login-btn" style="width:100%; justify-content:center;">
+          Se connecter
+        </button>
+
+        <div class="auth-footer">
+          <span>Pas encore de compte ?</span>
+          <a href="register.html">Créer un compte</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>
+  EventSport — Organisez et rejoignez des événements sportifs.
+</footer>
+
+<script type="module">
+import { auth, signOut, onAuthStateChanged } from './firebase-config.js';
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+const form = document.getElementById('login-form');
+const emailInput = document.getElementById('login-email');
+const passwordInput = document.getElementById('login-password');
+const errorDiv = document.getElementById('auth-error');
+const loginBtn = document.getElementById('login-btn');
+
+// Rediriger si déjà connecté
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.location.href = 'index.html';
+  }
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  
+  errorDiv.style.display = 'none';
+  loginBtn.disabled = true;
+  loginBtn.textContent = 'Connexion...';
+
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    window.location.href = 'index.html';
+  } catch (error) {
+    let message = 'Erreur de connexion.';
+    if (error.code === 'auth/user-not-found') {
+      message = 'Aucun compte trouvé avec cet email.';
+    } else if (error.code === 'auth/wrong-password') {
+      message = 'Mot de passe incorrect.';
+    } else if (error.code === 'auth/invalid-email') {
+      message = 'Email invalide.';
+    } else if (error.code === 'auth/too-many-requests') {
+      message = 'Trop de tentatives. Réessaie plus tard.';
+    }
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+  }
+
+  loginBtn.disabled = false;
+  loginBtn.textContent = 'Se connecter';
+});
+</script>
+
+</body>
+</html>

@@ -4,317 +4,36 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EventSport</title>
-<style>
-  :root{
-    --ink: #16241f;
-    --paper: #f4f1ea;
-    --line: #d8d2c4;
-    --accent: #ff5a36;
-    --accent-dark: #c93f20;
-    --green: #2f6b4f;
-    --green-light: #e6efe8;
-    --muted: #6f7a72;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height:1.5;
-  }
-  header{
-    border-bottom: 3px solid var(--ink);
-    padding: 18px 32px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background: var(--paper);
-    position: sticky;
-    top:0;
-    z-index:50;
-  }
-  .logo{
-    font-family: Georgia, 'Times New Roman', serif;
-    font-weight:bold;
-    font-size: 26px;
-    letter-spacing: -0.5px;
-  }
-  .logo span{ color: var(--accent); }
-  nav{ display:flex; gap:24px; align-items:center; flex-wrap:wrap; }
-  nav a{ text-decoration:none; color:var(--ink); font-size:14px; font-weight:600; cursor:pointer; }
-  nav a:hover{ color: var(--accent); }
-  .btn{
-    background: var(--ink);
-    color: var(--paper);
-    border:none;
-    padding: 10px 22px;
-    font-weight:bold;
-    font-size:14px;
-    cursor:pointer;
-    border-radius: 2px;
-    transition: background .15s;
-    text-decoration: none;
-    display: inline-block;
-  }
-  .btn:hover{ background: var(--accent); }
-  .btn-outline{
-    background:transparent;
-    border:2px solid var(--ink);
-    color:var(--ink);
-    padding:8px 20px;
-    font-weight:bold;
-    cursor:pointer;
-    font-size:14px;
-    border-radius:2px;
-    text-decoration: none;
-    display: inline-block;
-  }
-  .btn-outline:hover{ border-color:var(--accent); color:var(--accent); }
-
-  .hero{
-    padding: 70px 32px 50px;
-    display:grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    gap:40px;
-    align-items:center;
-    border-bottom: 1px solid var(--line);
-  }
-  .hero h1{
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 64px;
-    line-height: 1.05;
-    letter-spacing:-1px;
-  }
-  .hero h1 em{
-    font-style:normal;
-    background: var(--accent);
-    color: var(--paper);
-    padding: 0 10px;
-  }
-  .hero p{
-    margin-top:18px;
-    font-size:18px;
-    color: var(--muted);
-    max-width: 480px;
-  }
-  .hero-actions{ margin-top:30px; display:flex; gap:14px; flex-wrap:wrap; }
-  
-  .sport-image-container {
-    border: 3px solid var(--ink);
-    border-radius: 4px;
-    overflow: hidden;
-    background: var(--green-light);
-    position: relative;
-    height: 100%;
-    min-height: 300px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .sport-image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .sport-image-container .overlay-text {
-    position: absolute;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(22, 36, 31, 0.85);
-    color: var(--paper);
-    padding: 12px 28px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 4px;
-    text-align: center;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    border: 2px solid var(--accent);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-  }
-  .sport-image-container .overlay-text span {
-    color: var(--accent);
-  }
-
-  .section{ padding: 50px 32px; max-width: 1280px; margin: 0 auto; }
-  .section-head{
-    display:flex; justify-content:space-between; align-items:flex-end;
-    margin-bottom: 28px; flex-wrap:wrap; gap:16px;
-  }
-  .section-head h2{
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 36px;
-  }
-  .eyebrow{
-    font-size:12px; letter-spacing:3px; text-transform:uppercase;
-    color: var(--accent-dark); font-weight:bold; margin-bottom:8px;
-  }
-
-  .filters{ display:flex; gap:10px; flex-wrap:wrap; }
-  .filter-chip{
-    border:1px solid var(--ink); background:transparent;
-    padding:7px 16px; font-size:13px; font-weight:bold;
-    cursor:pointer; border-radius:20px; transition:.15s;
-  }
-  .filter-chip.active{ background:var(--ink); color:var(--paper); }
-  .filter-chip:hover{ border-color: var(--accent); }
-
-  .grid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 22px;
-  }
-  .card{
-    border:1px solid var(--ink);
-    background: #fff;
-    padding: 0;
-    display:flex; flex-direction:column;
-    transition: transform .15s, box-shadow .15s;
-    position:relative;
-    overflow:hidden;
-  }
-  .card:hover{ transform: translateY(-3px); box-shadow: 6px 6px 0 var(--ink); }
-  .card-top{
-    padding: 18px;
-    border-bottom: 1px solid var(--line);
-    display:flex; justify-content:space-between; align-items:flex-start;
-  }
-  .sport-tag{
-    font-size:11px; font-weight:bold; letter-spacing:1.5px;
-    text-transform:uppercase; padding:5px 10px; border-radius:3px;
-    background: var(--green-light); color: var(--green);
-  }
-  .card-num{
-    font-family: Georgia, serif; font-size:42px; font-weight:bold;
-    color: var(--line); line-height:1;
-  }
-  .card-body{ padding: 18px; flex:1; display:flex; flex-direction:column; gap:10px; }
-  .card-body h3{ font-size:20px; font-family: Georgia, serif; }
-  .card-meta{ font-size:13px; color: var(--muted); display:flex; flex-direction:column; gap:4px; }
-  .card-meta b{ color: var(--ink); }
-  .progress-wrap{ margin-top:auto; }
-  .progress-bar{
-    height:6px; background: var(--line); border-radius:3px; overflow:hidden;
-  }
-  .progress-fill{ height:100%; background: var(--accent); }
-  .progress-label{ font-size:12px; color:var(--muted); margin-top:6px; display:flex; justify-content:space-between; }
-  .card-actions{ padding: 14px 18px; border-top:1px solid var(--line); display:flex; gap:10px; }
-  .card-actions button{ flex:1; font-size:13px; padding:9px; }
-
-  .empty-state{
-    border:2px dashed var(--line); padding:50px 20px; text-align:center;
-    color:var(--muted); border-radius:6px; grid-column: 1/-1;
-  }
-  .empty-state h3{ font-family:Georgia,serif; color:var(--ink); margin-bottom:8px; font-size:22px; }
-
-  .how-grid{ display:grid; grid-template-columns: repeat(3,1fr); gap:24px; }
-  .how-step{ border-left: 3px solid var(--accent); padding-left:18px; }
-  .how-step .num{ font-family:Georgia, serif; font-size:34px; color:var(--line); }
-  .how-step h4{ font-size:18px; margin:6px 0; }
-  .how-step p{ font-size:14px; color:var(--muted); }
-
-  footer{
-    border-top:3px solid var(--ink); padding:30px 32px; text-align:center;
-    font-size:13px; color:var(--muted);
-  }
-
-  .overlay{
-    position:fixed; inset:0; background:rgba(22,36,31,0.55);
-    display:none; align-items:center; justify-content:center;
-    z-index:100; padding:20px;
-  }
-  .overlay.open{ display:flex; }
-  .modal{
-    background: var(--paper); border:3px solid var(--ink);
-    width: 100%; max-width: 520px; max-height:90vh; overflow-y:auto;
-    border-radius:4px;
-  }
-  .modal-head{
-    padding:18px 24px; border-bottom:1px solid var(--line);
-    display:flex; justify-content:space-between; align-items:center;
-  }
-  .modal-head h3{ font-family:Georgia, serif; font-size:24px; }
-  .modal-close{ background:none; border:none; font-size:24px; cursor:pointer; color:var(--muted); line-height:1; }
-  .modal-body{ padding:24px; display:flex; flex-direction:column; gap:16px; }
-  .field label{ display:block; font-size:13px; font-weight:bold; margin-bottom:6px; }
-  .field input, .field select, .field textarea{
-    width:100%; padding:10px 12px; border:1px solid var(--ink);
-    background:#fff; font-size:14px; font-family:inherit; border-radius:2px;
-  }
-  .field textarea{ resize:vertical; min-height:70px; }
-  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
-  .modal-foot{ padding:18px 24px; border-top:1px solid var(--line); display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; }
-
-  .participants-list{ display:flex; flex-direction:column; gap:8px; max-height:240px; overflow-y:auto; }
-  .participant-row{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:8px 12px; background:#fff; border:1px solid var(--line); border-radius:3px;
-    font-size:14px;
-  }
-
-  .loading-spinner {
-    text-align: center;
-    padding: 60px 20px;
-    grid-column: 1/-1;
-  }
-  .loading-spinner::after {
-    content: 'Chargement des evenements...';
-    font-size: 18px;
-    color: var(--muted);
-    animation: pulse 1.5s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
-  }
-
-  @media (max-width: 860px){
-    .hero{ grid-template-columns:1fr; padding-top:40px; }
-    .hero h1{ font-size:40px; }
-    header{ padding:14px 18px; }
-    nav{ gap:14px; }
-    .how-grid{ grid-template-columns:1fr; }
-    .field-row{ grid-template-columns:1fr; }
-    .sport-image-container {
-      min-height: 200px;
-    }
-    .sport-image-container .overlay-text {
-      white-space: normal;
-      padding: 10px 20px;
-      font-size: 15px;
-      bottom: 20px;
-      max-width: 90%;
-    }
-  }
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header>
-  <div class="logo">Event<span>Sport</span></div>
+  <a class="logo" href="index.html">Event<span>Sport</span></a>
   <nav>
-    <a id="nav-events">Evenements</a>
-    <a id="nav-how">Comment ca marche</a>
-    <a class="btn" href="create.html" id="open-create" style="text-decoration:none; display:inline-block;">+ Creer un evenement</a>
+    <a href="event.html">Événements</a>
+    <a id="nav-how">Comment ça marche</a>
+    <a class="btn" href="create.html" id="open-create" style="text-decoration:none; display:inline-block;">+ Créer un événement</a>
+    <div id="auth-nav" style="display:flex; gap:6px; align-items:center;">
+      <!-- Rempli par JS -->
+    </div>
   </nav>
 </header>
 
 <section class="hero">
   <div>
-    <h1>Organise ton <em>tournoi</em>.<br>Rassemble ton equipe.</h1>
-    <p>EventSport te permet de creer en quelques secondes un tournoi de ping-pong, foot, basket, padel ou n'importe quel sport et de gerer les inscriptions des participants.</p>
+    <h1>Organise ton <em>tournoi</em>.<br>Rassemble ton équipe.</h1>
+    <p>EventSport te permet de créer en quelques secondes un tournoi de ping-pong et de gérer les inscriptions des participants.</p>
     <div class="hero-actions">
       <a class="btn" href="create.html" id="hero-create" style="text-decoration:none; display:inline-block;">Lancer un tournoi</a>
-      <button class="btn-outline" id="hero-browse">Voir les evenements</button>
+      <a class="btn-outline" href="event.html" id="hero-browse" style="text-decoration:none; display:inline-block;">Voir les événements</a>
     </div>
   </div>
   
   <div class="sport-image-container">
     <img 
       src="https://www.lequipe.fr/_medias/img-photo-jpg/lebrun-felix-fra-lebrun-alexis-fra/1500000002203639/0-828-552-75/849ee.jpg" 
-      alt="Evenement sportif"
+      alt="Événement sportif"
       onerror="this.style.display='none';"
     >
     <div class="overlay-text">
@@ -323,315 +42,89 @@
   </div>
 </section>
 
-<section class="section" id="events-section">
-  <div class="section-head">
-    <div>
-      <div class="eyebrow">Tous les evenements</div>
-      <h2>Trouve ton prochain match</h2>
-    </div>
-    <div class="filters" id="filters">
-      <button class="filter-chip active" data-sport="all">Tous</button>
-      <button class="filter-chip" data-sport="Ping-pong">Ping-pong</button>
-      <button class="filter-chip" data-sport="Football">Football</button>
-      <button class="filter-chip" data-sport="Basketball">Basketball</button>
-      <button class="filter-chip" data-sport="Tennis">Tennis</button>
-      <button class="filter-chip" data-sport="Padel">Padel</button>
-      <button class="filter-chip" data-sport="Volleyball">Volleyball</button>
-      <button class="filter-chip" data-sport="Autre">Autre</button>
-    </div>
-  </div>
-  <div class="grid" id="events-grid">
-    <div class="loading-spinner"></div>
-  </div>
-</section>
-
 <section class="section" id="how-section">
   <div class="section-head">
     <div>
       <div class="eyebrow">Mode d'emploi</div>
-      <h2>Comment ca marche</h2>
+      <h2>Comment ça marche</h2>
     </div>
   </div>
   <div class="how-grid">
     <div class="how-step">
       <div class="num">01</div>
-      <h4>Cree ton evenement</h4>
-      <p>Choisis un sport, donne un nom, une date, un lieu et un nombre de places maximum.</p>
+      <h4>Crée ton événement</h4>
+      <p>Choisis un sport, une région, une date, un lieu et un nombre de places maximum.</p>
     </div>
     <div class="how-step">
       <div class="num">02</div>
       <h4>Partage-le</h4>
-      <p>Ton tournoi apparaît dans la liste, visible par tous ceux qui consultent le site.</p>
+      <p>Ton tournoi apparaît dans la liste, visible et filtrable par région par tous ceux qui consultent le site.</p>
     </div>
     <div class="how-step">
       <div class="num">03</div>
       <h4>Les joueurs s'inscrivent</h4>
-      <p>Chacun rejoint l'evenement en un clic, jusqu'a ce que les places soient completes.</p>
+      <p>Chacun rejoint l'événement en un clic, jusqu'à ce que les places soient complètes.</p>
     </div>
   </div>
 </section>
 
 <footer>
-  EventSport Organisez et rejoignez des evenements sportifs. Les donnees sont stockees dans le cloud via Firebase.
+  EventSport — Organisez et rejoignez des événements sportifs. Les données sont stockées dans le cloud via Firebase.
 </footer>
 
-<div class="overlay" id="detail-overlay">
-  <div class="modal">
-    <div class="modal-head">
-      <h3 id="detail-name">Evenement</h3>
-      <button class="modal-close" data-close>×</button>
-    </div>
-    <div class="modal-body">
-      <div id="detail-meta" class="card-meta"></div>
-      <div id="detail-desc" style="font-size:14px; color:var(--muted);"></div>
-      <div class="field">
-        <label>Participants (<span id="detail-count">0</span>/<span id="detail-max">0</span>)</label>
-        <div class="participants-list" id="detail-participants"></div>
-      </div>
-      <div class="field" id="join-field">
-        <label>Ton nom</label>
-        <input type="text" id="join-name" placeholder="Entre ton nom pour t'inscrire">
-      </div>
-    </div>
-    <div class="modal-foot">
-      <a class="btn-outline" id="manage-event" style="text-decoration:none; text-align:center;">Gerer l'evenement</a>
-      <button class="btn" id="join-event">Rejoindre</button>
-    </div>
-  </div>
-</div>
-
 <script type="module">
-import { db } from './firebase-config.js';
-import { collection, updateDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { auth, signOut, onAuthStateChanged } from './firebase-config.js';
 
-let events = [];
-let currentFilter = 'all';
-let currentDetailId = null;
-
-function escapeHtml(str) {
-  const div = document.createElement('div');
-  div.textContent = str || '';
-  return div.innerHTML;
-}
-
-function fmtDate(d, t) {
-  if(!d) return 'Date non precisee';
-  const date = new Date(d + 'T' + (t || '00:00'));
-  const options = { weekday:'short', day:'numeric', month:'short' };
-  let str = date.toLocaleDateString('fr-FR', options);
-  if(t) str += ' a ' + t;
-  return str;
-}
-
-function render() {
-  const grid = document.getElementById('events-grid');
-  
-  const filtered = currentFilter === 'all' 
-    ? events 
-    : events.filter(e => e.sport === currentFilter);
-
-  if(filtered.length === 0) {
-    grid.innerHTML = `<div class="empty-state">
-      <h3>${events.length === 0 ? 'Aucun evenement' : 'Aucun evenement pour ce sport'}</h3>
-      <p>${events.length === 0 ? 'Sois le premier a creer un tournoi !' : 'Essaie un autre filtre ou cree un nouvel evenement.'}</p>
-    </div>`;
-    return;
-  }
-
-  grid.innerHTML = '';
-  
-  filtered.forEach((e, i) => {
-    const participants = e.participants || [];
-    const pct = Math.min(100, Math.round((participants.length / e.max) * 100));
-    const full = participants.length >= e.max;
-    
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <div class="card-top">
-        <span class="sport-tag">${escapeHtml(e.sport)}</span>
-        <span class="card-num">${String(i+1).padStart(2,'0')}</span>
-      </div>
-      <div class="card-body">
-        <h3>${escapeHtml(e.name)}</h3>
-        <div class="card-meta">
-          <span><b>Quand :</b> ${fmtDate(e.date, e.time)}</span>
-          <span><b>Ou :</b> ${escapeHtml(e.location || 'Non precise')}</span>
-          <span><b>Format :</b> ${escapeHtml(e.format || 'Non specifie')}</span>
-        </div>
-        <div class="progress-wrap">
-          <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
-          <div class="progress-label">
-            <span>${participants.length} / ${e.max} inscrits</span>
-            <span>${full ? 'Complet' : pct + '%'}</span>
-          </div>
-        </div>
-      </div>
-      <div class="card-actions">
-        <a class="btn-outline" href="event.html?id=${e.id}" style="text-decoration:none; text-align:center;">Gerer / Details</a>
-        <button class="btn" data-join="${e.id}" ${full ? 'disabled style="opacity:.5;cursor:not-allowed;"' : ''}>${full ? 'Complet' : 'Rejoindre'}</button>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
-
-  grid.querySelectorAll('[data-join]').forEach(btn => {
-    btn.addEventListener('click', () => openDetail(btn.dataset.join, true));
-  });
-}
-
-function loadEventsFromFirebase() {
-  const q = query(collection(db, "events"), orderBy("createdAt", "desc"));
-  
-  onSnapshot(q, (snapshot) => {
-    events = [];
-    snapshot.forEach((doc) => {
-      const data = doc.data();
-      events.push({
-        id: doc.id,
-        ...data,
-        participants: data.participants || [],
-        createdAt: data.createdAt?.toDate?.() || new Date()
-      });
-    });
-    render();
-  }, (error) => {
-    console.error("Erreur de chargement:", error);
-    document.getElementById('events-grid').innerHTML = `
-      <div class="empty-state">
-        <h3>Erreur de chargement</h3>
-        <p>Impossible de charger les evenements. Verifie ta connexion a Firebase.</p>
-      </div>
-    `;
-  });
-}
-
-async function openDetail(id, focusJoin) {
-  const e = events.find(x => x.id === id);
-  if(!e) {
-    alert("Evenement non trouve");
-    return;
-  }
-  
-  currentDetailId = id;
-  const participants = e.participants || [];
-
-  document.getElementById('detail-name').textContent = e.name || 'Sans nom';
-  document.getElementById('detail-meta').innerHTML = `
-    <span><b>Sport :</b> ${escapeHtml(e.sport || 'Non specifie')}</span>
-    <span><b>Format :</b> ${escapeHtml(e.format || 'Non specifie')}</span>
-    <span><b>Quand :</b> ${fmtDate(e.date, e.time)}</span>
-    <span><b>Ou :</b> ${escapeHtml(e.location || 'Non precise')}</span>
-  `;
-  document.getElementById('detail-desc').textContent = e.desc || '';
-  document.getElementById('detail-count').textContent = participants.length;
-  document.getElementById('detail-max').textContent = e.max || 0;
-
-  const list = document.getElementById('detail-participants');
-  list.innerHTML = '';
-  if(participants.length === 0) {
-    list.innerHTML = '<div style="font-size:13px; color:var(--muted);">Aucun participant pour l\'instant.</div>';
-  } else {
-    participants.forEach(p => {
-      const row = document.createElement('div');
-      row.className = 'participant-row';
-      row.innerHTML = `<span>${escapeHtml(p)}</span>`;
-      list.appendChild(row);
-    });
-  }
-
-  const full = participants.length >= (e.max || 0);
-  const joinBtn = document.getElementById('join-event');
-  const joinField = document.getElementById('join-field');
-  
-  if(full || (e.max || 0) === 0) {
-    joinField.style.display = 'none';
-    joinBtn.textContent = 'Complet';
-    joinBtn.disabled = true;
-    joinBtn.style.opacity = '0.5';
-  } else {
-    joinField.style.display = 'block';
-    joinBtn.textContent = 'Rejoindre';
-    joinBtn.disabled = false;
-    joinBtn.style.opacity = '1';
-  }
-  
-  document.getElementById('join-name').value = '';
-  document.getElementById('detail-overlay').classList.add('open');
-  
-  if(focusJoin) setTimeout(() => document.getElementById('join-name')?.focus(), 100);
-}
-
-document.getElementById('join-event').addEventListener('click', async () => {
-  const nameInput = document.getElementById('join-name');
-  const name = nameInput.value.trim();
-  
-  if(!name) {
-    alert('Entre ton nom pour rejoindre.');
-    return;
-  }
-  
-  const e = events.find(x => x.id === currentDetailId);
-  if(!e) {
-    alert('Evenement non trouve.');
-    return;
-  }
-  
-  if((e.participants || []).length >= e.max) {
-    alert('Cet evenement est complet.');
-    return;
-  }
-
-  try {
-    const eventRef = doc(db, "events", currentDetailId);
-    await updateDoc(eventRef, {
-      participants: [...(e.participants || []), name]
-    });
-  } catch (error) {
-    console.error("Erreur lors de l'inscription:", error);
-    alert("Erreur lors de l'inscription. Veuillez reessayer.");
-  }
-});
-
-document.querySelectorAll('[data-close]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.getElementById('detail-overlay').classList.remove('open');
-  });
-});
-
-document.querySelectorAll('.overlay').forEach(ov => {
-  ov.addEventListener('click', (e) => {
-    if(e.target === ov) ov.classList.remove('open');
-  });
-});
-
-document.getElementById('filters').addEventListener('click', (ev) => {
-  const btn = ev.target.closest('.filter-chip');
-  if(!btn) return;
-  
-  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  currentFilter = btn.dataset.sport;
-  render();
-});
-
-document.getElementById('hero-browse').addEventListener('click', () => {
-  document.getElementById('events-section').scrollIntoView({behavior:'smooth'});
-});
-
-document.getElementById('nav-events').addEventListener('click', () => {
-  document.getElementById('events-section').scrollIntoView({behavior:'smooth'});
-});
-
+// Navigation "Comment ça marche"
 document.getElementById('nav-how').addEventListener('click', () => {
   document.getElementById('how-section').scrollIntoView({behavior:'smooth'});
 });
 
-document.getElementById('manage-event').addEventListener('click', () => {
-  window.location.href = 'event.html?id=' + currentDetailId;
-});
+// Gestion de l'authentification dans le header
+const authNav = document.getElementById('auth-nav');
+const openCreateBtn = document.getElementById('open-create');
+const heroCreateBtn = document.getElementById('hero-create');
 
-loadEventsFromFirebase();
+function updateAuthUI(user) {
+  if (user) {
+    // Utilisateur connecté → Afficher les boutons "Créer"
+    openCreateBtn.style.display = 'inline-block';
+    heroCreateBtn.style.display = 'inline-block';
+    
+    authNav.innerHTML = `
+      <span style="font-size:13px; font-weight:500; color:var(--muted); padding:0 8px;">
+        👋 ${user.email?.split('@')[0] || 'Utilisateur'}
+      </span>
+      <button id="logout-btn" class="btn-outline" style="padding:6px 16px; font-size:12px; border-width:1.5px; cursor:pointer;">
+        Déconnexion
+      </button>
+    `;
+    
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Erreur déconnexion:', error);
+      }
+    });
+
+  } else {
+    // Utilisateur non connecté → Cacher les boutons "Créer"
+    openCreateBtn.style.display = 'none';
+    heroCreateBtn.style.display = 'none';
+    
+    authNav.innerHTML = `
+      <a href="login.html" class="btn-outline" style="text-decoration:none; padding:6px 16px; font-size:12px; border-width:1.5px;">Connexion</a>
+      <a href="register.html" class="btn" style="text-decoration:none; padding:6px 16px; font-size:12px; border-width:1.5px;">S'inscrire</a>
+    `;
+  }
+}
+
+// Écouter les changements d'état d'authentification
+onAuthStateChanged(auth, (user) => {
+  updateAuthUI(user);
+});
 </script>
 
 </body>

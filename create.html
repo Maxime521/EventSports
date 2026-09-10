@@ -1,328 +1,288 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Creer un evenement — EventSport</title>
-<style>
-  :root{
-    --ink: #16241f;
-    --paper: #f4f1ea;
-    --line: #d8d2c4;
-    --accent: #ff5a36;
-    --accent-dark: #c93f20;
-    --green: #2f6b4f;
-    --green-light: #e6efe8;
-    --muted: #6f7a72;
-  }
-  *{box-sizing:border-box; margin:0; padding:0;}
-  body{
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    line-height:1.5;
-  }
-  header{
-    border-bottom: 3px solid var(--ink);
-    padding: 18px 32px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background: var(--paper);
-    position: sticky;
-    top:0;
-    z-index:50;
-  }
-  .logo{
-    font-family: Georgia, 'Times New Roman', serif;
-    font-weight:bold;
-    font-size: 26px;
-    letter-spacing: -0.5px;
-    text-decoration:none;
-    color: var(--ink);
-  }
-  .logo span{ color: var(--accent); }
-  nav a{
-    text-decoration:none; color:var(--ink); font-size:14px; font-weight:600;
-    border:2px solid var(--ink); padding:8px 20px; border-radius:2px;
-  }
-  nav a:hover{ border-color: var(--accent); color: var(--accent); }
-
-  .page{
-    max-width: 720px; margin: 0 auto; padding: 50px 32px 80px;
-  }
-  .eyebrow{
-    font-size:12px; letter-spacing:3px; text-transform:uppercase;
-    color: var(--accent-dark); font-weight:bold; margin-bottom:8px;
-  }
-  h1{
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 44px;
-    letter-spacing:-1px;
-    margin-bottom: 10px;
-  }
-  .subtitle{ color: var(--muted); font-size:16px; margin-bottom: 36px; max-width:520px; }
-
-  form{
-    border: 1px solid var(--ink);
-    background: #fff;
-    padding: 32px;
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-  }
-  .field label{ display:block; font-size:13px; font-weight:bold; margin-bottom:6px; }
-  .field input, .field select, .field textarea{
-    width:100%; padding:11px 13px; border:1px solid var(--ink);
-    background:#fff; font-size:15px; font-family:inherit; border-radius:2px;
-  }
-  .field input:focus, .field select:focus, .field textarea:focus{
-    outline: 2px solid var(--accent); outline-offset:1px;
-  }
-  .field textarea{ resize:vertical; min-height:90px; }
-  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-  .hint{ font-size:12px; color: var(--muted); margin-top:4px; }
-
-  .actions{
-    display:flex; gap:12px; justify-content:flex-end;
-    border-top: 1px solid var(--line); padding-top: 24px; margin-top:8px;
-  }
-  .btn{
-    background: var(--ink);
-    color: var(--paper);
-    border:none;
-    padding: 12px 28px;
-    font-weight:bold;
-    font-size:14px;
-    cursor:pointer;
-    border-radius: 2px;
-    transition: background .15s;
-  }
-  .btn:hover{ background: var(--accent); }
-  .btn:disabled{
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-  .btn-outline{
-    background:transparent;
-    border:2px solid var(--ink);
-    color:var(--ink);
-    padding:10px 26px;
-    font-weight:bold;
-    cursor:pointer;
-    font-size:14px;
-    border-radius:2px;
-    text-decoration:none;
-    display:inline-flex;
-    align-items:center;
-  }
-  .btn-outline:hover{ border-color:var(--accent); color:var(--accent); }
-
-  .success-message {
-    display: none;
-    background: var(--green-light);
-    border: 2px solid var(--green);
-    color: var(--green);
-    padding: 16px 20px;
-    border-radius: 4px;
-    margin-bottom: 20px;
-    font-weight: bold;
-  }
-  .success-message.show {
-    display: block;
-  }
-
-  @media (max-width: 640px){
-    .field-row{ grid-template-columns:1fr; }
-    h1{ font-size:32px; }
-    form{ padding:20px; }
-    .actions{ flex-direction:column-reverse; }
-    .actions .btn, .actions .btn-outline{ width:100%; justify-content:center; text-align:center; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer un événement — EventSport</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header>
   <a class="logo" href="index.html">Event<span>Sport</span></a>
   <nav>
-    <a href="index.html">← Retour aux evenements</a>
+    <a href="event.html">← Retour aux événements</a>
+    <div id="auth-nav" style="display:flex; gap:6px; align-items:center;"></div>
   </nav>
 </header>
 
-<div class="page">
-  <div class="eyebrow">Nouvel evenement</div>
-  <h1>Cree ton tournoi</h1>
-  <p class="subtitle">Remplis les informations ci-dessous. Ton evenement sera immediatement visible dans la liste pour que les joueurs puissent s'inscrire.</p>
-
-  <div id="success-message" class="success-message">
-    Evenement cree avec succes !
-    <div style="margin-top: 8px; font-size: 14px; font-weight: normal;">
-      Tu es maintenant admin de cet evenement. Tu peux le gerer librement.
+<main class="page">
+  <!-- Message si non connecté -->
+  <div id="auth-required" style="display:none;">
+    <div class="auth-required-card">
+      <h2>🔒 Connexion requise</h2>
+      <p>Tu dois être connecté pour créer un événement.</p>
+      <div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+        <a href="login.html" class="btn">Se connecter</a>
+        <a href="register.html" class="btn-outline">Créer un compte</a>
+      </div>
     </div>
   </div>
 
-  <form id="create-form">
-    <div class="field">
-      <label>Nom de l'evenement</label>
-      <input type="text" id="ev-name" placeholder="Ex : Tournoi de ping-pong du bureau" required>
-    </div>
+  <!-- Formulaire de création (caché si non connecté) -->
+  <div id="create-content" style="display:none;">
+    <div class="eyebrow">Nouvel événement</div>
+    <h1>Crée ton tournoi</h1>
 
-    <div class="field-row">
-      <div class="field">
-        <label>Sport</label>
-        <select id="ev-sport">
-          <option>Ping-pong</option>
-          <option>Football</option>
-          <option>Basketball</option>
-          <option>Tennis</option>
-          <option>Padel</option>
-          <option>Volleyball</option>
-          <option>Autre</option>
-        </select>
-      </div>
-      <div class="field">
-        <label>Format</label>
-        <select id="ev-format">
-          <option>Tournoi elimination directe</option>
-          <option>Match simple</option>
-          <option>Championnat (poules)</option>
-          <option>Tournoi par equipes</option>
-        </select>
+    <p class="subtitle">
+      Remplis les informations ci-dessous. Ton événement sera immédiatement
+      visible dans la liste pour que les joueurs puissent s'inscrire.
+    </p>
+
+    <div id="success-message" class="success-message">
+      Événement créé avec succès !
+      <div style="margin-top:8px;font-size:14px;font-weight:normal;">
+        Tu es maintenant admin de cet événement. Tu peux le gérer librement.
       </div>
     </div>
 
-    <div class="field-row">
+    <form id="create-form">
+      <!-- Formulaire identique à avant -->
       <div class="field">
-        <label>Date</label>
-        <input type="date" id="ev-date" required>
+        <label for="ev-name">Nom de l'événement</label>
+        <input type="text" id="ev-name" placeholder="Ex : Tournoi de ping-pong du bureau" required>
       </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="ev-sport">Sport</label>
+          <select id="ev-sport">
+            <option>Ping-pong</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ev-format">Format</label>
+          <select id="ev-format">
+            <option>Tournoi élimination directe</option>
+            <option>Match simple</option>
+            <option>Championnat (poules)</option>
+            <option>Tournoi par équipes</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="ev-date">Date</label>
+          <input type="date" id="ev-date" required>
+        </div>
+        <div class="field">
+          <label for="ev-time">Heure</label>
+          <input type="time" id="ev-time" value="18:00" required>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="ev-region">Région</label>
+          <select id="ev-region" required>
+            <option value="" disabled selected>Sélectionner une région</option>
+            <option>Auvergne-Rhône-Alpes</option>
+            <option>Bourgogne-Franche-Comté</option>
+            <option>Bretagne</option>
+            <option>Centre-Val de Loire</option>
+            <option>Corse</option>
+            <option>Grand Est</option>
+            <option>Hauts-de-France</option>
+            <option>Île-de-France</option>
+            <option>Normandie</option>
+            <option>Nouvelle-Aquitaine</option>
+            <option>Occitanie</option>
+            <option>Pays de la Loire</option>
+            <option>Provence-Alpes-Côte d'Azur</option>
+            <option>Outre-mer</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="ev-location">Lieu</label>
+          <input type="text" id="ev-location" placeholder="Ex : Salle des fêtes, Paris">
+        </div>
+      </div>
+
       <div class="field">
-        <label>Heure</label>
-        <input type="time" id="ev-time" value="18:00" required>
+        <label for="ev-max">Nombre de places maximum</label>
+        <input type="number" id="ev-max" min="2" value="8" required>
+        <div class="hint">Le nombre maximum de participants pouvant s'inscrire.</div>
       </div>
-    </div>
 
-    <div class="field">
-      <label>Lieu</label>
-      <input type="text" id="ev-location" placeholder="Ex : Salle des fetes, Paris">
-    </div>
+      <div class="field">
+        <label for="ev-desc">Description (optionnel)</label>
+        <textarea id="ev-desc" placeholder="Quelques infos sur l'événement : règles, niveau, matériel à apporter..."></textarea>
+      </div>
 
-    <div class="field">
-      <label>Nombre de places maximum</label>
-      <input type="number" id="ev-max" min="2" value="8">
-      <div class="hint">Le nombre maximum de participants pouvant s'inscrire.</div>
-    </div>
-
-    <div class="field">
-      <label>Description (optionnel)</label>
-      <textarea id="ev-desc" placeholder="Quelques infos sur l'evenement : regles, niveau, materiel a apporter..."></textarea>
-    </div>
-
-    <div class="actions">
-      <a class="btn-outline" href="index.html">Annuler</a>
-      <button type="submit" class="btn" id="submit-btn">Creer l'evenement</button>
-    </div>
-  </form>
-</div>
+      <div class="actions">
+        <a class="btn-outline" href="event.html">Annuler</a>
+        <button type="submit" class="btn" id="submit-btn">Créer l'événement</button>
+      </div>
+    </form>
+  </div>
+</main>
 
 <script type="module">
-import { db } from './firebase-config.js';
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { db, auth, onAuthStateChanged, signOut } from './firebase-config.js';
+import {
+  collection,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
+const authRequired = document.getElementById('auth-required');
+const createContent = document.getElementById('create-content');
+const authNav = document.getElementById('auth-nav');
 const form = document.getElementById('create-form');
 const submitBtn = document.getElementById('submit-btn');
 const successMessage = document.getElementById('success-message');
 
+// ===== GESTION AUTH HEADER =====
+function updateAuthUI(user) {
+  if (user) {
+    authNav.innerHTML = `
+      <span style="font-size:13px; font-weight:500; color:var(--muted); padding:0 8px;">
+        👋 ${user.email?.split('@')[0] || 'Utilisateur'}
+      </span>
+      <button id="logout-btn" class="btn-outline" style="padding:6px 16px; font-size:12px; border-width:1.5px; cursor:pointer;">
+        Déconnexion
+      </button>
+    `;
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        window.location.href = 'index.html';
+      } catch (error) {
+        console.error('Erreur déconnexion:', error);
+      }
+    });
+  } else {
+    authNav.innerHTML = `
+      <a href="login.html" class="btn-outline" style="text-decoration:none; padding:6px 16px; font-size:12px; border-width:1.5px;">Connexion</a>
+      <a href="register.html" class="btn" style="text-decoration:none; padding:6px 16px; font-size:12px; border-width:1.5px;">S'inscrire</a>
+    `;
+  }
+}
+
+// ===== VÉRIFICATION AUTH POUR ACCÈS CREATE =====
+onAuthStateChanged(auth, (user) => {
+  updateAuthUI(user);
+  
+  if (user) {
+    // Connecté → afficher le formulaire
+    authRequired.style.display = 'none';
+    createContent.style.display = 'block';
+  } else {
+    // Non connecté → afficher le message
+    authRequired.style.display = 'block';
+    createContent.style.display = 'none';
+  }
+});
+
+// ===== FORMULAIRE DE CRÉATION =====
+function resetButton() {
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Créer l'événement";
+}
+
 form.addEventListener('submit', async (ev) => {
   ev.preventDefault();
-  
+
+  // Vérifier que l'utilisateur est toujours connecté
+  if (!auth.currentUser) {
+    alert("Tu dois être connecté pour créer un événement.");
+    window.location.href = 'login.html';
+    return;
+  }
+
   submitBtn.disabled = true;
-  submitBtn.textContent = 'Creation en cours...';
+  submitBtn.textContent = 'Création en cours...';
 
   const name = document.getElementById('ev-name').value.trim();
   const sport = document.getElementById('ev-sport').value;
   const format = document.getElementById('ev-format').value;
   const date = document.getElementById('ev-date').value;
   const time = document.getElementById('ev-time').value;
+  const region = document.getElementById('ev-region').value;
   const location = document.getElementById('ev-location').value.trim();
-  const max = parseInt(document.getElementById('ev-max').value) || 8;
+  const max = parseInt(document.getElementById('ev-max').value, 10);
   const desc = document.getElementById('ev-desc').value.trim();
 
-  if(!name){
-    alert('Merci de donner un nom a ton evenement.');
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Creer l\'evenement';
-    return;
-  }
-
-  if(!date){
-    alert('Merci de choisir une date.');
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Creer l\'evenement';
-    return;
-  }
+  if (!name) { alert("Merci de donner un nom à ton événement."); resetButton(); return; }
+  if (!date) { alert("Merci de choisir une date."); resetButton(); return; }
+  if (!time) { alert("Merci de choisir une heure."); resetButton(); return; }
+  if (!region) { alert("Merci de choisir une région."); resetButton(); return; }
+  if (!Number.isInteger(max) || max < 2) { alert("Le nombre minimum de places est de 2."); resetButton(); return; }
 
   try {
-    console.log('Tentative de creation de l\'evenement...');
-    
-    const docRef = await addDoc(collection(db, "events"), {
-      name: name,
-      sport: sport,
-      format: format,
-      date: date,
-      time: time,
-      location: location || '',
-      max: max,
-      desc: desc || '',
-      participants: [],
-      createdAt: new Date()
-    });
+    console.log("Tentative de création de l'événement...");
 
-    console.log('Evenement cree avec ID:', docRef.id);
-    
-    // Sauvegarder l'ID de l'evenement dans localStorage pour le mode admin
+const docRef = await addDoc(collection(db, "events"), {
+  name: name,
+  sport: sport,
+  format: format,
+  date: date,
+  time: time,
+  region: region,
+  location: location,
+  max: max,
+  desc: desc,
+  participants: [],
+  createdBy: auth.currentUser.uid,        // ← UID du créateur
+  createdByEmail: auth.currentUser.email, // ← Email du créateur
+  createdAt: serverTimestamp()
+});
+
+    console.log("Événement créé avec ID :", docRef.id);
+
+    // Sauvegarde locale admin
     const adminEvents = JSON.parse(localStorage.getItem('adminEvents') || '[]');
-    adminEvents.push(docRef.id);
+    if (!adminEvents.includes(docRef.id)) {
+      adminEvents.push(docRef.id);
+    }
     localStorage.setItem('adminEvents', JSON.stringify(adminEvents));
-    
-    // Afficher le message de succes
+
     successMessage.classList.add('show');
-    
-    // Cacher le formulaire
     form.style.display = 'none';
-    
-    // Modifier le titre
-    document.querySelector('h1').textContent = 'Evenement cree !';
-    document.querySelector('.subtitle').textContent = 'Tu es maintenant admin de cet evenement. Tu peux le gerer librement.';
-    
-    // Ajouter des boutons d'action
+    document.querySelector('h1').textContent = 'Événement créé !';
+    document.querySelector('.subtitle').textContent = 'Ton événement a bien été créé. Tu peux maintenant le gérer.';
+
     const actionsDiv = document.querySelector('.actions');
     actionsDiv.innerHTML = `
-      <a class="btn" href="event.html?id=${docRef.id}" style="text-decoration:none;">Gerer l'evenement</a>
-      <a class="btn-outline" href="index.html">Voir tous les evenements</a>
+      <a class="btn" href="event.html?id=${encodeURIComponent(docRef.id)}">Gérer l'événement</a>
+      <a class="btn-outline" href="event.html">Voir tous les événements</a>
     `;
-    
+
   } catch (error) {
-    console.error("Erreur lors de la creation:", error);
-    alert("Erreur lors de la creation de l'evenement: " + error.message);
-    submitBtn.disabled = false;
-    submitBtn.textContent = 'Creer l\'evenement';
+    console.error("Erreur Firebase :", error);
+    if (error.code === "permission-denied" || error.code === "firestore/permission-denied") {
+      alert("Firebase refuse la création de l'événement.\n\nVérifie les règles Firestore et publie-les dans Firebase Console.");
+    } else {
+      alert("Erreur lors de la création de l'événement :\n\n" + error.message);
+    }
+    resetButton();
   }
 });
 
-// Ajouter une date par defaut
+// Date par défaut (demain)
 document.addEventListener('DOMContentLoaded', () => {
   const dateInput = document.getElementById('ev-date');
   if (!dateInput.value) {
-    const today = new Date();
-    const tomorrow = new Date(today);
+    const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    dateInput.value = tomorrow.toISOString().split('T')[0];
+    const year = tomorrow.getFullYear();
+    const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+    const day = String(tomorrow.getDate()).padStart(2, '0');
+    dateInput.value = `${year}-${month}-${day}`;
   }
 });
-
-console.log('Pour gerer l\'evenement, utilisez: event.html?id=' + createdEventId);
 </script>
 
 </body>

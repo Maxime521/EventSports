@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription — EventSport</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">Event<span>Sport</span></a>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="event.html">Événements</a>
+    <a href="login.html" class="btn-outline" style="text-decoration:none; display:inline-block;">Se connecter</a>
+  </nav>
+</header>
+
+<main class="page auth-page">
+  <div class="auth-container">
+    <div class="auth-card">
+      <div class="auth-head">
+        <div class="eyebrow">Rejoins-nous</div>
+        <h1>Créer un compte</h1>
+        <p class="subtitle">Inscris-toi pour créer et gérer tes événements sportifs.</p>
+      </div>
+
+      <form id="register-form">
+        <div id="auth-error" class="auth-error" style="display:none;"></div>
+
+        <div class="field">
+          <label for="register-email">Email</label>
+          <input type="email" id="register-email" placeholder="ton@email.com" required autocomplete="email">
+        </div>
+
+        <div class="field">
+          <label for="register-password">Mot de passe</label>
+          <input type="password" id="register-password" placeholder="Minimum 6 caractères" required autocomplete="new-password" minlength="6">
+          <div class="hint">Au moins 6 caractères</div>
+        </div>
+
+        <div class="field">
+          <label for="register-confirm">Confirmer le mot de passe</label>
+          <input type="password" id="register-confirm" placeholder="Répète ton mot de passe" required autocomplete="new-password">
+        </div>
+
+        <button type="submit" class="btn" id="register-btn" style="width:100%; justify-content:center;">
+          Créer mon compte
+        </button>
+
+        <div class="auth-footer">
+          <span>Déjà un compte ?</span>
+          <a href="login.html">Se connecter</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
+<footer>
+  EventSport — Organisez et rejoignez des événements sportifs.
+</footer>
+
+<script type="module">
+import { auth } from './firebase-config.js';
+import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+const form = document.getElementById('register-form');
+const emailInput = document.getElementById('register-email');
+const passwordInput = document.getElementById('register-password');
+const confirmInput = document.getElementById('register-confirm');
+const errorDiv = document.getElementById('auth-error');
+const registerBtn = document.getElementById('register-btn');
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const email = emailInput.value.trim();
+  const password = passwordInput.value.trim();
+  const confirm = confirmInput.value.trim();
+  
+  errorDiv.style.display = 'none';
+
+  // Validation
+  if (password.length < 6) {
+    errorDiv.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (password !== confirm) {
+    errorDiv.textContent = 'Les mots de passe ne correspondent pas.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  registerBtn.disabled = true;
+  registerBtn.textContent = 'Création en cours...';
+
+  try {
+    await createUserWithEmailAndPassword(auth, email, password);
+    window.location.href = 'index.html';
+  } catch (error) {
+    let message = 'Erreur lors de l\'inscription.';
+    if (error.code === 'auth/email-already-in-use') {
+      message = 'Cet email est déjà utilisé.';
+    } else if (error.code === 'auth/invalid-email') {
+      message = 'Email invalide.';
+    } else if (error.code === 'auth/weak-password') {
+      message = 'Mot de passe trop faible (minimum 6 caractères).';
+    }
+    errorDiv.textContent = message;
+    errorDiv.style.display = 'block';
+  }
+
+  registerBtn.disabled = false;
+  registerBtn.textContent = 'Créer mon compte';
+});
+</script>
+
+</body>
+</html>
