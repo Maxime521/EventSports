@@ -87,14 +87,14 @@ const heroCreateBtn = document.getElementById('hero-create');
 
 function updateAuthUI(user) {
   if (user) {
-    // Utilisateur connecté → Afficher les boutons "Créer"
+    // Utilisateur connecté → Afficher les boutons "Créer" et "Profil"
     openCreateBtn.style.display = 'inline-block';
     heroCreateBtn.style.display = 'inline-block';
     
     authNav.innerHTML = `
-      <span style="font-size:13px; font-weight:500; color:var(--muted); padding:0 8px;">
-        👋 ${user.email?.split('@')[0] || 'Utilisateur'}
-      </span>
+      <a href="dashboard.html" class="btn-outline" style="text-decoration:none; padding:6px 16px; font-size:12px; border-width:1.5px; border-color:var(--accent);">
+        👤 Mon Profil
+      </a>
       <button id="logout-btn" class="btn-outline" style="padding:6px 16px; font-size:12px; border-width:1.5px; cursor:pointer;">
         Déconnexion
       </button>

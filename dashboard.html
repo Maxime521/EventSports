@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mon Profil — EventSport</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">Event<span>Sport</span></a>
+  <nav>
+    <a href="index.html">Accueil</a>
+    <a href="event.html">Événements</a>
+    <a class="btn" href="create.html" id="open-create" style="text-decoration:none; display:inline-block;">+ Créer un événement</a>
+    <div id="auth-nav" style="display:flex; gap:6px; align-items:center;"></div>
+  </nav>
+</header>
+
+<div class="page" id="dashboard-content">
+  <div class="loading-spinner"></div>
+</div>
+
+<script type="module">
+import { db, auth, signOut, onAuthStateChanged } from './firebase-config.js';
+import { collection, query, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+import { updateProfile, updatePassword } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+const authNav = document.getElementById('auth-nav');
+const openCreateBtn = document.getElementById('open-create');
+const container = document.getElementById('dashboard-content');
+
+let currentUser = null;
+let allEvents = [];
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str || '';
+  return div.innerHTML;
+}
+
+function fmtDate(d, t) {
+  if(!d) return 'Date non précisée';
+  const date = new Date(d + 'T' + (t || '00:00'));
+  return date.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' });
+}
+
+function updateAuthNav(user) {
+  if (user) {
+    openCreateBtn.style.display = 'inline-block';
+    authNav.innerHTML = `
+      <a href="dashboard.html" class="btn-outline" style="text-decoration:none; padding:6px 16px; font-size:12px; border-width:1.5px; border-color:var(--accent);">👤 Mon Profil</a>
+      <button id="logout-btn" class="btn-outline" style="padding:6px 16px; font-size:12px; border-width:1.5px; cursor:pointer;">Déconnexion</button>
+    `;
+    document.getElementById('logout-btn')?.addEventListener('click', async () => {
+      await signOut(auth);
+      window.location.href = 'index.html';
+    });
+  } else {
+    window.location.href = 'login.html';
+  }
+}
+
+onAuthStateChanged(auth, (user) => {
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+  currentUser = user;
+  updateAuthNav(user);
+  loadDashboardData();
+});
+
+function loadDashboardData() {
+  const q = query(collection(db, "events"));
+  onSnapshot(q, (snapshot) => {
+    allEvents = [];
+    snapshot.forEach((doc) => {
+      allEvents.push({ id: doc.id, ...doc.data() });
+    });
+    renderDashboard();
+  });
+}
+
+function renderDashboard() {
+  const myEmail = currentUser.email;
+  const myUid = currentUser.uid;
+
+  // Filtrer les événements où l'utilisateur est inscrit
+  const joinedEvents = allEvents.filter(e => {
+    const participants = e.participants || [];
+    return participants.some(p => (typeof p === 'string' ? p : p.email) === myEmail);
+  });
+
+  // Filtrer les événements créés par l'utilisateur
+  const createdEvents = allEvents.filter(e => e.createdBy === myUid);
+
+  container.innerHTML = `
+    <div class="eyebrow">Espace personnel</div>
+    <h1>Mon Tableau de bord</h1>
+    <div class="meta-line">
+      <b>${escapeHtml(currentUser.displayName || currentUser.email.split('@')[0])}</b> · ${escapeHtml(currentUser.email)}
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <!-- Événements inscrits -->
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-head">
+            <h3>⚽ Mes Inscriptions (${joinedEvents.length})</h3>
+          </div>
+          <div class="card-body">
+            ${joinedEvents.length === 0 ? '<p style="color:var(--muted); font-size:14px;">Tu n\'es inscrit à aucun événement pour le moment.</p>' : ''}
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              ${joinedEvents.map(e => `
+                <div style="padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <strong style="display:block;">${escapeHtml(e.name)}</strong>
+                    <span style="font-size:12px; color:var(--muted);">${escapeHtml(e.sport)} · ${fmtDate(e.date, e.time)} · ${escapeHtml(e.location || 'Non précisé')}</span>
+                  </div>
+                  <a href="event.html?id=${e.id}" class="btn-outline" style="text-decoration:none; font-size:12px; padding:4px 12px;">Voir</a>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Événements créés -->
+        <div class="card">
+          <div class="card-head">
+            <h3>👑 Mes Événements créés (${createdEvents.length})</h3>
+          </div>
+          <div class="card-body">
+            ${createdEvents.length === 0 ? '<p style="color:var(--muted); font-size:14px;">Tu n\'as créé aucun événement.</p>' : ''}
+            <div style="display:flex; flex-direction:column; gap:12px;">
+              ${createdEvents.map(e => `
+                <div style="padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                    <strong style="display:block;">${escapeHtml(e.name)}</strong>
+                    <span style="font-size:12px; color:var(--muted);">${escapeHtml(e.sport)} · ${fmtDate(e.date, e.time)}</span>
+                  </div>
+                  <a href="event.html?id=${e.id}" class="btn" style="text-decoration:none; font-size:12px; padding:4px 12px;">Gérer</a>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modifier le profil -->
+      <div>
+        <div class="card">
+          <div class="card-head">
+            <h3>✏️ Modifier mon profil</h3>
+          </div>
+          <div class="card-body">
+            <div class="field">
+              <label>Nom d'affichage</label>
+              <input type="text" id="profile-name" value="${escapeHtml(currentUser.displayName || '')}" placeholder="Ton pseudo ou prénom">
+            </div>
+            <button class="btn" id="save-profile-btn" style="width:100%; justify-content:center; margin-bottom:20px;">Enregistrer le nom</button>
+
+            <hr style="border:0; border-top:1px solid var(--border); margin:20px 0;">
+
+            <div class="field">
+              <label>Nouveau mot de passe</label>
+              <input type="password" id="profile-pass" placeholder="Nouveau mot de passe">
+            </div>
+            <button class="btn-outline" id="save-pass-btn" style="width:100%; justify-content:center;">Changer le mot de passe</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Événements boutons
+  document.getElementById('save-profile-btn')?.addEventListener('click', async () => {
+    const name = document.getElementById('profile-name').value.trim();
+    if (!name) return alert('Saisis un nom valide.');
+    try {
+      await updateProfile(currentUser, { displayName: name });
+      alert('Profil mis à jour !');
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert('Erreur lors de la mise à jour.');
+    }
+  });
+
+  document.getElementById('save-pass-btn')?.addEventListener('click', async () => {
+    const pass = document.getElementById('profile-pass').value.trim();
+    if (pass.length < 6) return alert('Le mot de passe doit faire au moins 6 caractères.');
+    try {
+      await updatePassword(currentUser, pass);
+      alert('Mot de passe modifié avec succès !');
+      document.getElementById('profile-pass').value = '';
+    } catch (err) {
+      console.error(err);
+      alert('Erreur (réauthentification requise si la session est ancienne).');
+    }
+  });
+}
+</script>
+
+</body>
+</html>
